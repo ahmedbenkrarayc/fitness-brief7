@@ -1,6 +1,7 @@
 <?php
 
 require './../utils/db.php';
+require './../utils/guardAdmin.php';
 
 $sql = "SELECT r.*, m.prenom, m.nom, a.nom AS 'activity' FROM reservation r, membre m, activite a WHERE r.id_membre = m.id_membre AND r.id_activite = a.id_activite;";
 $result = $conn->query($sql);

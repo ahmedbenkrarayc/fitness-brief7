@@ -1,6 +1,7 @@
 <?php
 
 require './../utils/db.php';
+require './../utils/guardAdmin.php';
 
 $sql = "SELECT * FROM membre";
 $result = $conn->query($sql);

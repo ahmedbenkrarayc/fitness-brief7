@@ -1,6 +1,7 @@
 <?php
 
 require './../utils/db.php';
+require './../utils/guardAdmin.php';
 
 if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $nom = htmlspecialchars($_POST['nom']);

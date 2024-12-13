@@ -1,6 +1,8 @@
 <?php
 
 require './../utils/db.php';
+require './../utils/guardMembre.php';
+
 session_start();
 
 $sql = "SELECT * FROM activite WHERE disponibilite = 1;";

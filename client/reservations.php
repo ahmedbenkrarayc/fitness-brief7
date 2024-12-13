@@ -1,16 +1,18 @@
 <?php
 
 require './../utils/db.php';
+require './../utils/guardMembre.php';
 session_start();
+
 $membre = $_SESSION['id'];
-$sql = "SELECT r.*, a.nom FROM reservation r, membre m, activite a  WHERE r.id_membre = m.id_membre AND r.id_activite = a.id_activite AND r.id_membre = $membre;";
+$sql = "SELECT r.*, a.nom as 'activity' FROM reservation r, membre m, activite a  WHERE r.id_membre = m.id_membre AND r.id_activite = a.id_activite AND r.id_membre = $membre;";
 $result = $conn->query($sql);
-$reservation = $result->fetch_all(MYSQLI_ASSOC);
+$reservations = $result->fetch_all(MYSQLI_ASSOC);
 
 if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $reservation = $_POST['id_reservation'];
 
-    $sql = "UPDATE reservation SET status = 'annulee' where id = ?";
+    $sql = "UPDATE reservation SET status = 'annulee' where id_reservation = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $reservation);
 
@@ -439,19 +441,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
                             Id
                           </th>
                           <th>
-                            Nom
+                            Activite
                           </th>
                           <th>
-                            Capacite
+                            Status
                           </th>
                           <th>
-                            Date debut
-                          </th>
-                          <th>
-                            Date fin
-                          </th>
-                          <th>
-                            Description
+                            Date reservation
                           </th>
                           <th>
                             Actions
@@ -459,30 +455,24 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
                         </tr>
                       </thead>
                       <tbody>
-                        <?php foreach($activites as $activity){ ?>
+                        <?php foreach($reservations as $item){ ?>
                         <tr>
                           <td class="py-1">
-                            <?php echo $activity['id_activite'] ?>
+                            <?php echo $item['id_reservation'] ?>
                           </td>
                           <td>
-                            <?php echo $activity['nom'] ?>
+                            <?php echo $item['activity'] ?>
                           </td>
                           <td>
-                            <?php echo $activity['capacite'] ?>
+                            <?php echo $item['status'] ?>
                           </td>
                           <td>
-                            <?php echo $activity['date_debut'] ?>
-                          </td>
-                          <td>
-                            <?php echo $activity['date_fin'] ?>
-                          </td>
-                          <td>
-                            <?php echo $activity['description'] ?>
+                            <?php echo $item['date_reservation'] ?>
                           </td>
                           <td>
                             <form action="" method="post">
-                                <input type="hidden" name="id_activite" value="<?php echo $activity['id_activite'] ?>">
-                                <button type="submit">reserver</button>
+                                <input type="hidden" name="id_reservation" value="<?php echo $item['id_reservation'] ?>">
+                                <button type="submit">Annuler</button>
                             </form>
                           </td>
                         </tr>
