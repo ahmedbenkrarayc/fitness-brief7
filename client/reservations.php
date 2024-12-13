@@ -1,21 +1,21 @@
 <?php
 
 require './../utils/db.php';
+session_start();
+$membre = $_SESSION['id'];
+$sql = "SELECT r.*, a.nom FROM reservation r, membre m, activite a  WHERE r.id_membre = m.id_membre AND r.id_activite = a.id_activite AND r.id_membre = $membre;";
+$result = $conn->query($sql);
+$reservation = $result->fetch_all(MYSQLI_ASSOC);
 
 if($_SERVER['REQUEST_METHOD'] == 'POST'){
-    $nom = htmlspecialchars($_POST['nom']);
-    $prenom = htmlspecialchars($_POST['prenom']);
-    $email = htmlspecialchars($_POST['email']);
-    $phone = htmlspecialchars($_POST['phone']);
-    $password = htmlspecialchars($_POST['password']);
-    $hashedPassword = md5($password);
+    $reservation = $_POST['id_reservation'];
 
-    $sql = "INSERT INTO membre (nom, prenom, email, telephone, password) VALUES (?, ?, ?, ?, ?)";
+    $sql = "UPDATE reservation SET status = 'annulee' where id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssss", $nom, $prenom, $email, $phone, $hashedPassword);
-    
+    $stmt->bind_param("i", $reservation);
+
     if ($stmt->execute()) {
-        echo '<script>alert("Member inserted successfully")</script>';
+        echo '<script>alert("reserved successfully")</script>';
     } else {
         echo '<script>alert("Something went wrong !")</script>';
     }    
@@ -40,8 +40,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
   <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
   <!-- endinject -->
   <!-- Plugin css for this page -->
-  <link rel="stylesheet" href="../../vendors/select2/select2.min.css">
-  <link rel="stylesheet" href="../../vendors/select2-bootstrap-theme/select2-bootstrap.min.css">
   <!-- End plugin css for this page -->
   <!-- inject:css -->
   <link rel="stylesheet" href="../../css/vertical-layout-light/style.css">
@@ -426,44 +424,75 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
         </ul>
       </nav>
       <!-- partial -->
-      <div class="main-panel">        
+      <div class="main-panel">
         <div class="content-wrapper">
           <div class="row">
-            <div class="col-12 grid-margin stretch-card">
+            <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Membre create</h4>
-                  <form method="POST" action="" class="forms-sample">
-                  <div class="form-group">
-                      <label for="nom">Nom</label>
-                      <input type="text" class="form-control" id="nom" placeholder="Entrer le nom" name="nom">
-                    </div>
-                    <div class="form-group">
-                      <label for="prenom">Prenom</label>
-                      <input type="text" class="form-control" id="prenom" placeholder="Entrer le prenom" name="prenom">
-                    </div>
-                    <div class="form-group">
-                      <label for="exampleInputEmail3">Email address</label>
-                      <input type="email" class="form-control" id="exampleInputEmail3" placeholder="Email" name="email">
-                    </div>
-                    <div class="form-group">
-                      <label for="phone">Phone</label>
-                      <input type="text" class="form-control" id="phone" placeholder="Entrer le telephone" name="phone">
-                    </div>
-                    <div class="form-group">
-                      <label for="password">Password</label>
-                      <input type="password" class="form-control" id="password" placeholder="Entrer le mot de passe" name="password">
-                    </div>
-                    <button type="submit" class="btn btn-primary mr-2">Submit</button>
-                    <button class="btn btn-light">Cancel</button>
-                  </form>
+                  <h4 class="card-title">activites list</h4>
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>
+                            Id
+                          </th>
+                          <th>
+                            Nom
+                          </th>
+                          <th>
+                            Capacite
+                          </th>
+                          <th>
+                            Date debut
+                          </th>
+                          <th>
+                            Date fin
+                          </th>
+                          <th>
+                            Description
+                          </th>
+                          <th>
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <?php foreach($activites as $activity){ ?>
+                        <tr>
+                          <td class="py-1">
+                            <?php echo $activity['id_activite'] ?>
+                          </td>
+                          <td>
+                            <?php echo $activity['nom'] ?>
+                          </td>
+                          <td>
+                            <?php echo $activity['capacite'] ?>
+                          </td>
+                          <td>
+                            <?php echo $activity['date_debut'] ?>
+                          </td>
+                          <td>
+                            <?php echo $activity['date_fin'] ?>
+                          </td>
+                          <td>
+                            <?php echo $activity['description'] ?>
+                          </td>
+                          <td>
+                            <form action="" method="post">
+                                <input type="hidden" name="id_activite" value="<?php echo $activity['id_activite'] ?>">
+                                <button type="submit">reserver</button>
+                            </form>
+                          </td>
+                        </tr>
+                        <?php } ?>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-        <!-- content-wrapper ends -->
-        <!-- partial:../../partials/_footer.html -->
         <footer class="footer">
           <div class="d-sm-flex justify-content-center justify-content-sm-between">
             <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2021.  Premium <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash. All rights reserved.</span>
@@ -481,8 +510,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
   <script src="../../vendors/js/vendor.bundle.base.js"></script>
   <!-- endinject -->
   <!-- Plugin js for this page -->
-  <script src="../../vendors/typeahead.js/typeahead.bundle.min.js"></script>
-  <script src="../../vendors/select2/select2.min.js"></script>
   <!-- End plugin js for this page -->
   <!-- inject:js -->
   <script src="../../js/off-canvas.js"></script>
@@ -492,9 +519,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
   <script src="../../js/todolist.js"></script>
   <!-- endinject -->
   <!-- Custom js for this page-->
-  <script src="../../js/file-upload.js"></script>
-  <script src="../../js/typeahead.js"></script>
-  <script src="../../js/select2.js"></script>
   <!-- End custom js for this page-->
 </body>
 
