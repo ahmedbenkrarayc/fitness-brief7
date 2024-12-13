@@ -1,6 +1,6 @@
 <?php
 
-require 'db.php';
+require './../utils/db.php';
 
 if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $nom = htmlspecialchars($_POST['nom']);

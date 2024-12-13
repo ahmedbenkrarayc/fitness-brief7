@@ -1,6 +1,6 @@
 <?php
 
-require 'db.php';
+require './../utils/db.php';
 
 if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $nom = htmlspecialchars($_POST['nom']);
@@ -451,11 +451,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
                     </div>
                     <div class="form-group">
                       <label for="datedebut">Date debut</label>
-                      <input type="date" class="form-control" id="datedebut" name="debut">
+                      <input type="date" class="form-control" id="datedebut" name="datedebut">
                     </div>
                     <div class="form-group">
-                      <label for="datefin">Date debut</label>
-                      <input type="date" class="form-control" id="datefin" name="fin">
+                      <label for="datefin">Date fin</label>
+                      <input type="date" class="form-control" id="datefin" name="datefin">
                     </div>
                     <div class="form-group">
                       <label for="description">Description</label>

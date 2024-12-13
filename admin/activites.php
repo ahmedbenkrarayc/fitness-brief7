@@ -1,6 +1,6 @@
 <?php
 
-require 'db.php';
+require './../utils/db.php';
 
 $sql = "SELECT * FROM activite";
 $result = $conn->query($sql);

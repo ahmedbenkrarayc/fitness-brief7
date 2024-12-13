@@ -1,6 +1,6 @@
 <?php
 
-require 'db.php';
+require './../utils/db.php';
 
 $sql = "SELECT * FROM membre";
 $result = $conn->query($sql);
